@@ -1,0 +1,108 @@
+spring:
+  application:
+    name: siyue-zuul
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        prefer-ip-address: true
+server:
+  port: 8005
+
+zuul:
+  prefix: /api
+  ribbon:
+    eager-load:
+      # 饥饿加载模式开启-启动时创建httpclient请求实例
+      enabled: true
+  routes:
+    #member-consumer的名字可以任意
+    siyueli-member:
+      #url含有/member/*会转发到应用member-consumer中
+      path: /siyueli-member/**
+      #应用名
+      serviceId: siyueli-member-consumer
+    member-server:
+      path: /member-server/**
+      #应用名
+      serviceId: member-service
+    #商品SKU服务客户端含feign服务调用负载均衡
+    merchandise-consumer:
+      path: /merchandise/**
+      serviceId: merchandise-client
+    #商品SKU服务服务端
+    merchandise-server:
+      path: /merchandise-server/**
+      serviceId: merchandise-service
+    # 采购订单服务客户端含feign服务调用负载均衡
+    purchase-consumer:
+      path: /purchase/**
+      serviceId: purchase-client
+    # 采购订单服务端
+    purchase-server:
+      path: /purchase-server/**
+      serviceId: purchase-service
+    # 订单服务客户端
+    order-consumer:
+      path: /order/**
+      serviceId: order-client
+    # 订单服务服务端
+    order-server:
+      path: /order-server/**
+      serviceId: order-service
+    # 短信服务
+    files-consumer:
+       path: /files/**
+       serviceId: files-consumer
+    # 权限服务
+    authority:
+       path: /authority/**
+       serviceId: authority-service
+    # 经销商会员服务
+    sales-member:
+       path: /sales-member/**
+       serviceId: sales-member-consumer
+    # 微信服务
+    weixin:
+       path: /siyue-weixin/**
+       serviceId: weixin-consumer
+    # 短信服务
+    sms-consumer:
+       path: /sms/**
+       serviceId: sms-consumer
+    # 斯越里活动服务
+    siyueli-activity:
+       path: /siyueli-activity/**
+       serviceId: siyueli-activity-consumer
+ # retryable: true
+
+
+#断路器的超时时间,断路器的超时时间需要大于ribbon的超时时间，不然不会触发重试
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+
+swagger:
+  enabled: true
+
+# 自定义swagger获取哪个sevice的路径名
+# 这里填写服务service path
+swagger-custom:
+  swagger-spec: sales-member,merchandise,purchase,files,authority,order,siyue-weixin,siyueli-member,siyueli-activity
+
+
+#该ribbon时间要大于各个微服务的时间
+ribbon:
+  ConnectTimeout: 20000
+  ReadTimeout: 10000
+
+
+files:
+#  path:  /opt/data/files
+  path: /Users/joey/Documents/logs
+
